@@ -1,0 +1,18 @@
+---
+
+redis_version: 3.0.1
+redis_archive: redis-{{ redis_version }}
+redis_archive_url: http://download.redis.io/releases/{{ redis_archive }}.tar.gz
+redis_build_dir: /tmp/redis
+redis_install_dir: /opt/{{ redis_service_name }}
+redis_config_dir: /etc/{{ redis_service_name }}
+redis_log_dir: /var/log/{{ redis_service_name }}
+redis_user: "{{ redis_service_name }}"
+redis_group: "{{ redis_service_name }}"
+redis_service_name: redis
+redis_data_dir: /var/{{ redis_service_name }}
+
+redis_service_timeout: 1200
+
+#config
+redis_port: 6379

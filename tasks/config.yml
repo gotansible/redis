@@ -1,0 +1,35 @@
+---
+
+- name: config - create config dir
+  file:
+    state=directory
+    path={{ redis_config_dir }}
+    mode=755
+    owner={{ redis_user }}
+    group={{ redis_group }}
+
+- name: config - deploy config
+  template:
+    src=redis.conf.j2
+    dest={{ redis_config_dir }}/redis.conf
+    mode=0644
+    owner={{ redis_user }}
+    group={{ redis_group }}
+  notify: restart redis
+
+- name: config - create log dir
+  file:
+    state=directory
+    path={{ redis_log_dir }}
+    mode=0755
+    owner={{ redis_user }}
+    group={{ redis_group }}
+
+- nanme: config - create data dir
+  file:
+    state=directory
+    path={{ redis_data_dir }}
+    mode=0740
+    owner={{ redis_user }}
+    group={{ redis_group }}
+    

@@ -1,0 +1,77 @@
+---
+- name: create group
+  group:
+    name={{ redis_group }}
+    system=yes
+
+- name: create user
+  user:
+    name={{ redis_user }}
+    group={{ redis_group }}
+    system=yes
+    createhome=no
+
+- name: create build dir
+  file:
+    state=directory
+    path={{ redis_build_dir }}
+
+- name: check - already downloaded
+  stat: path={{ redis_build_dir }}/{{ redis_archive }}.tar.gz
+  register: redis_download
+
+- name: download redis
+  get_url:
+    url: "{{redis_archive_url}}"
+    dest: "{{ redis_build_dir }}"
+  when: not redis_download.stat.exists
+
+- name: unarchive
+  unarchive:
+    src={{ redis_build_dir }}/{{ redis_archive }}.tar.gz
+    dest={{ redis_build_dir }}
+    copy=no
+
+- name: build
+  shell: make
+  args:
+    chdir: "{{ redis_build_dir }}/{{ redis_archive }}"
+    creates: "{{ redis_build_dir }}/{{ redis_archive }}/src"
+
+- name: get list of executables
+  shell: find {{ redis_build_dir }}/{{ redis_archive }}/src -type f -perm /a+x
+  register: executables
+  changed_when: false
+
+- name: create install dir
+  file:
+    state=directory
+    path={{ redis_install_dir }}/{{ redis_archive }}
+    owner={{ redis_user }}
+    group={{ redis_group }}
+    mode=0755
+
+- name: install - redis already installed
+  stat: path={{ redis_install_dir }}/current/redis-server
+  register: binaries_installed
+
+- name: copy redis binaries
+  shell: cp {{ item }} {{ redis_install_dir }}/{{ redis_archive }}
+  args:
+    chdir: "{{ redis_build_dir }}/{{ redis_archive }}"
+  with_items: executables.stdout_lines
+  when: not binaries_installed.stat.exists
+
+- name: install - set file permissions
+  file:
+    state=directory
+    recurse=yes
+    path={{ redis_install_dir }}
+    owner={{ redis_user }}
+    group={{ redis_group }}
+
+- name: link to current
+  file:
+    state=link
+    src={{ redis_install_dir }}/{{ redis_archive }}
+    path={{ redis_install_dir }}/current
