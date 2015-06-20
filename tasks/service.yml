@@ -4,8 +4,8 @@
   runit:
     name: "{{ redis_service_name }}"
     enabled: true
-    state: up
-    timeout: 60
+    state: start
+    timeout: 7
     user: "{{ redis_user }}"
     command: "{{ redis_install_dir }}/current/redis-server {{ redis_config_dir }}/redis.conf"
   register: redis_service_status

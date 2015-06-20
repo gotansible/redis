@@ -4,6 +4,7 @@
   runit:
     name={{ redis_service_name }}
     state=up
+    enabled=true
     timeout={{ redis_service_timeout }}
     action=restart
   when: redis_service_status is defined and not redis_service_status.restarted

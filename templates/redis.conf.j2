@@ -202,7 +202,10 @@ dir {{ redis_data_dir }}
 #    network partition slaves automatically try to reconnect to masters
 #    and resynchronize with them.
 #
-# slaveof <masterip> <masterport>
+
+{% if redis_slaveof_host %}
+slaveof redis_slaveof_host redis_slaveof_port
+{% endif %}
 
 # If the master is password protected (using the "requirepass" configuration
 # directive below) it is possible to tell the slave to authenticate before

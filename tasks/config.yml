@@ -25,7 +25,7 @@
     owner={{ redis_user }}
     group={{ redis_group }}
 
-- nanme: config - create data dir
+- name: config - create data dir
   file:
     state=directory
     path={{ redis_data_dir }}
